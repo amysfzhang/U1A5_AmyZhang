@@ -68,14 +68,14 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="btnEasyMode" min="-2" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
-                              <Component id="btnEasyMode" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="comboOptions" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtGuess" min="-2" pref="129" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="txtGuess" min="-2" pref="129" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="56" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="btnSkip" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
@@ -109,10 +109,10 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="txtGuess" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnContinue" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="comboOptions" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="comboOptions" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnSkip" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnEasyMode" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -124,7 +124,7 @@
   <SubComponents>
     <Component class="javax.swing.JProgressBar" name="userHealthBar">
       <Properties>
-        <Property name="value" type="int" value="50"/>
+        <Property name="value" type="int" value="100"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btnContinue">
@@ -166,7 +166,7 @@
     </Container>
     <Component class="javax.swing.JProgressBar" name="compHealthBar">
       <Properties>
-        <Property name="value" type="int" value="50"/>
+        <Property name="value" type="int" value="100"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="comboOptions">
