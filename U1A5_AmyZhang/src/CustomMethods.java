@@ -16,13 +16,11 @@ public class CustomMethods extends javax.swing.JFrame {
     boolean easyMode = false, questionMode = false;
     int userHealth = 100, compHealth = 100, questionIndex;
     String userGuess;
-    // 10 questions
-    String[][] options = new String[10][4];
-    String[] questions = new String[10], answers = new String[10];
+    // 10 questions default
+    String[] questions = new String[10];
+    String[][] answers = new String[10][5]; //answer and then 4 options
     //String[][] options = {{"avoir", "avior", "avror", "aee"},{"être"}, {"devoir"}, {"pouvoir"}};
    // String[] questions = {""}, answers = {"avoir"};
-    
-    //make window for custom questions
     
     /**
      * Creates new form CustomMethods
@@ -31,10 +29,9 @@ public class CustomMethods extends javax.swing.JFrame {
         initComponents();
         
         //nothing except textarea is visible
-        btnContinue.setText("Next");
-
         btnSkip.setVisible(false);
-        btnEasyMode.setVisible(false);
+        btnHint.setVisible(false);
+        btnSubmit.setVisible(false);
         txtGuess.setVisible(false);
         comboOptions.setVisible(false);
         questionMode = true;
@@ -42,7 +39,7 @@ public class CustomMethods extends javax.swing.JFrame {
     
     public static int damage (int bound){
         Random rand = new Random();
-        int damage = rand.nextInt(bound);
+        int damage = rand.nextInt(0, bound);
         
         if (damage == 0) {
             //say it missed
@@ -62,21 +59,23 @@ public class CustomMethods extends javax.swing.JFrame {
     
     public void changeQMode(){
         if (questionMode){
-            btnContinue.setText("Submit");
+            btnArrow.setVisible(false);
+            btnSubmit.setVisible(true);
             
             btnSkip.setVisible(true);
-            btnEasyMode.setVisible(true);
+            btnHint.setVisible(true);
             txtGuess.setVisible(true);
             comboOptions.setVisible(false);
             
             questionMode = false;
             
         } else { //showing answer and damage
-            btnContinue.setText("Next");
+            btnArrow.setVisible(true);
+            btnSubmit.setVisible(false);
             
-            btnEasyMode.setVisible(false);
-            btnEasyMode.setSelected(false);
-            btnEasyMode.setEnabled(true);
+            btnHint.setVisible(false);
+            btnHint.setSelected(false);
+            btnHint.setEnabled(true);
             easyMode = false;
             
             btnSkip.setVisible(false);
@@ -104,7 +103,7 @@ public class CustomMethods extends javax.swing.JFrame {
         jSpinner3 = new javax.swing.JSpinner();
         jSpinner2 = new javax.swing.JSpinner();
         userHealthBar = new javax.swing.JProgressBar();
-        btnContinue = new javax.swing.JButton();
+        btnArrow = new javax.swing.JButton();
         lblTitle = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtOutput = new javax.swing.JTextArea();
@@ -112,9 +111,10 @@ public class CustomMethods extends javax.swing.JFrame {
         comboOptions = new javax.swing.JComboBox<>();
         btnSkip = new javax.swing.JButton();
         txtGuess = new javax.swing.JTextField();
-        btnEasyMode = new javax.swing.JToggleButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        btnHint = new javax.swing.JToggleButton();
+        lblCompImage = new javax.swing.JLabel();
+        lblUserImage = new javax.swing.JLabel();
+        btnSubmit = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(jTextPane1);
 
@@ -125,10 +125,13 @@ public class CustomMethods extends javax.swing.JFrame {
         userHealthBar.setForeground(new java.awt.Color(0, 204, 0));
         userHealthBar.setValue(100);
 
-        btnContinue.setText("Next");
-        btnContinue.addActionListener(new java.awt.event.ActionListener() {
+        btnArrow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arrow.png"))); // NOI18N
+        btnArrow.setBorderPainted(false);
+        btnArrow.setIconTextGap(0);
+        btnArrow.setPreferredSize(new java.awt.Dimension(40, 50));
+        btnArrow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnContinueActionPerformed(evt);
+                btnArrowActionPerformed(evt);
             }
         });
 
@@ -155,16 +158,26 @@ public class CustomMethods extends javax.swing.JFrame {
             }
         });
 
-        btnEasyMode.setText("Easy Mode");
-        btnEasyMode.addActionListener(new java.awt.event.ActionListener() {
+        btnHint.setText("Hint");
+        btnHint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEasyModeActionPerformed(evt);
+                btnHintActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("jLabel1");
+        lblCompImage.setText("jLabel1");
 
-        jLabel2.setText("jLabel2");
+        lblUserImage.setText("jLabel2");
+
+        btnSubmit.setFont(new java.awt.Font("Papyrus", 1, 14)); // NOI18N
+        btnSubmit.setText("Submit");
+        btnSubmit.setBorderPainted(false);
+        btnSubmit.setIconTextGap(0);
+        btnSubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSubmitActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,22 +198,23 @@ public class CustomMethods extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnEasyMode)
+                                    .addComponent(btnHint)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnSkip)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(19, 19, 19)
-                                        .addComponent(btnContinue))))
+                                        .addComponent(btnSubmit)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnArrow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jScrollPane3))))
                 .addGap(18, 18, 18))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+                .addComponent(lblCompImage)
                 .addGap(76, 76, 76))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,7 +223,7 @@ public class CustomMethods extends javax.swing.JFrame {
                         .addComponent(lblTitle))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(87, 87, 87)
-                        .addComponent(jLabel2)))
+                        .addComponent(lblUserImage)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -220,41 +234,84 @@ public class CustomMethods extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(compHealthBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21)
-                .addComponent(jLabel2)
+                .addComponent(lblUserImage)
                 .addGap(17, 17, 17)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(lblCompImage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(userHealthBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnContinue)
-                    .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnArrow, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnSubmit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSkip)
-                    .addComponent(btnEasyMode))
+                    .addComponent(btnHint))
                 .addGap(14, 14, 14))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContinueActionPerformed
+    private void btnArrowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnArrowActionPerformed
         Random rand = new Random();
+        boolean isEnd = false;
         
         if (compHealth <= 0 || userHealth <= 0) {
-            //final screen
-            //set everything invisible
-            //show winner, change image
-        } else if (questionMode) {
-            questionIndex = rand.nextInt(10);
-            //display next question
-            //txtOutput.setText(questions[questionIndex]);
-            changeQMode();
+            //final screen, show winner, change image
+            txtOutput.setText("Congrats! You have defeated the ++ with ++ health left"
+                    + "Click the arrow button to return to the menu");
+            //lblUserImage.setIcon("userVictory.png");
+
+            //If second time pressed
+            if (isEnd == true){
+                this.dispose();
+                new FrmMenu().setVisible(true);
+            }
+            isEnd = true;
+            
         } else {
+            questionIndex = rand.nextInt(0, 10);
+            //display next question
+            txtOutput.setText(questions[questionIndex]);
+            changeQMode();
+        }
+    }//GEN-LAST:event_btnArrowActionPerformed
+
+    private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
+        if (easyMode) {
+            userHealth -= damage(7);
+        } else {
+            userHealth -= damage(12);
+        }
+        //show answer
+        
+        updateHealth();
+        changeQMode();
+    }//GEN-LAST:event_btnSkipActionPerformed
+
+    private void btnHintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHintActionPerformed
+        if (btnHint.isSelected()){         
+            //switch to easy mode
+            comboOptions.setVisible(true);
+            txtGuess.setVisible(false);
+            btnHint.setEnabled(false);
+            easyMode = true;   
+            
+            //change options
+            comboOptions.removeAllItems();
+            for (String[] question : answers) {
+                comboOptions.addItem("item");
+            }
+        } 
+    }//GEN-LAST:event_btnHintActionPerformed
+
+    private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
             //check which mode (easy/normal)
             if (easyMode){
                 userGuess = String.valueOf(comboOptions.getSelectedItem());
@@ -280,35 +337,7 @@ public class CustomMethods extends javax.swing.JFrame {
             
             updateHealth();
             changeQMode();
-        }
-    }//GEN-LAST:event_btnContinueActionPerformed
-
-    private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
-        if (easyMode) {
-            userHealth -= damage(7);
-        } else {
-            userHealth -= damage(12);
-        }
-        //show answer
-        
-        updateHealth();
-        changeQMode();
-    }//GEN-LAST:event_btnSkipActionPerformed
-
-    private void btnEasyModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEasyModeActionPerformed
-        if (btnEasyMode.isSelected()){         
-            //switch to easy mode
-            comboOptions.setVisible(true);
-            txtGuess.setVisible(false);
-            btnEasyMode.setEnabled(false);
-            easyMode = true;   
-            
-            //change options
-            comboOptions.removeAllItems();
-            //for (item in : string[])
-            comboOptions.addItem("item");
-        } 
-    }//GEN-LAST:event_btnEasyModeActionPerformed
+    }//GEN-LAST:event_btnSubmitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -346,13 +375,12 @@ public class CustomMethods extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnContinue;
-    private javax.swing.JToggleButton btnEasyMode;
+    private javax.swing.JButton btnArrow;
+    private javax.swing.JToggleButton btnHint;
     private javax.swing.JButton btnSkip;
+    private javax.swing.JButton btnSubmit;
     private javax.swing.JComboBox<String> comboOptions;
     private javax.swing.JProgressBar compHealthBar;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSlider jSlider1;
@@ -361,7 +389,9 @@ public class CustomMethods extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JLabel lblCompImage;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblUserImage;
     private javax.swing.JTextField txtGuess;
     private javax.swing.JTextArea txtOutput;
     private javax.swing.JProgressBar userHealthBar;
