@@ -79,6 +79,7 @@ public class CustomQuestions extends javax.swing.JFrame {
         btnResetToDefault = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Custom Questions");
 
         lblQuestions.setText("Question:");
 
@@ -110,7 +111,15 @@ public class CustomQuestions extends javax.swing.JFrame {
             new String [] {
                 "Question", "Answer", "Option 1", "Option 2", "Option 3"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(questionsTable);
         if (questionsTable.getColumnModel().getColumnCount() > 0) {
             questionsTable.getColumnModel().getColumn(0).setPreferredWidth(250);
@@ -317,7 +326,7 @@ public class CustomQuestions extends javax.swing.JFrame {
                     + "Avoir (Présent): nous ____,avons,avez,a,avions\n"
                     + "Aller (Présent): vous ____,allez,allons,alliez,allais\n"
                     + "Dire (Conditionnel présent): tu _____,dirais,diraiz,dirions,diraient\n"
-                    + "Savoir (Futur Antérieur): nous _____,aurons su,ai su,aurai su,auras su");
+                    + "Savoir (Futur Antérieur): nous _____,aurons su,ai su,aurai su,auras su\n");
             file.close();
 
             updateTable();  

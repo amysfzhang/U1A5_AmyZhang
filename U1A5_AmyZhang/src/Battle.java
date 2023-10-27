@@ -12,7 +12,7 @@
 import java.io.*;
 import java.util.*;
         
-public class Battlefield extends javax.swing.JFrame {
+public class Battle extends javax.swing.JFrame {
 
     boolean easyMode = false, questionMode = false, isEnd = false;;
     int userHealth = 100, compHealth = 100, questionIndex = -1;
@@ -25,7 +25,7 @@ public class Battlefield extends javax.swing.JFrame {
     /**
      * Creates new form CustomMethods
      */
-    public Battlefield() {
+    public Battle() {
         initComponents();
         
         //nothing except textarea is visible
@@ -46,7 +46,7 @@ public class Battlefield extends javax.swing.JFrame {
                 Scanner readLine = new Scanner(readFile.nextLine());
                 readLine.useDelimiter(",");
                 
-                //storing values of a line
+                //storing values of a line in questions or currentAnswers
                 questions.add(readLine.next());
                 ArrayList<String> currentAnswers = new ArrayList<>();
                 for (int i = 0; i < 4; i++){
@@ -56,25 +56,47 @@ public class Battlefield extends javax.swing.JFrame {
                 line++;
             }
             readFile.close();
+            
         } catch (IOException e) {
             System.out.println("No Questions.csv file found");
             e.printStackTrace();
         }
     }
     
-    public static int damage (int bound){
+    /**
+     * @param int the max value of the damage plus 2
+     * @param boolean if easyMode is on
+     * @return int randomized damage amount, might be 0
+     */
+    public static int damage (int bound, boolean easyMode){
         Random rand = new Random();
-        int damage = rand.nextInt(bound);
+        int damage;
+        bound +=2;
         
-        if (damage == 0) {
-            //say it missed
-            return 0;
-        }
+        //changes range to be smaller if easymode is on
+        if (easyMode) bound -= 5;
+        damage = rand.nextInt(bound);
+        
+        //slight offchance for damage to be a critical hit
         if (damage == bound - 1){
-            //say critical hit
             return bound + 3;
         }
         return damage;
+    }
+    
+    public void userMisses(int damageDone){
+        //displays message for user missed
+        txtOutput.append("\n==="
+            + "\nThe correct answer was: " + answers.get(questionIndex).get(0)
+            + "\n==="
+            + "\nYou missed.");
+
+        //different message depending on oppoenent damage/miss
+        if (damageDone != 0) {
+             txtOutput.append("The Chikorita dealt " + damageDone + " damage.");
+        } else {
+             txtOutput.append("The Chikorita also missed");
+        }
     }
     
     public void updateHealth(){
@@ -83,7 +105,7 @@ public class Battlefield extends javax.swing.JFrame {
     }
     
     public void changeQMode(){
-        if (questionMode){
+        if (questionMode){ //showing textfield and buttons to submit
             btnArrow.setVisible(false);
             btnSubmit.setVisible(true);
             
@@ -94,7 +116,7 @@ public class Battlefield extends javax.swing.JFrame {
             
             questionMode = false;
             
-        } else { //showing answer and damage
+        } else { //showing answer, damage dealt
             btnArrow.setVisible(true);
             btnSubmit.setVisible(false);
             
@@ -141,12 +163,14 @@ public class Battlefield extends javax.swing.JFrame {
         lblCompImage = new javax.swing.JLabel();
         lblUserImage = new javax.swing.JLabel();
         btnSubmit = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(jTextPane1);
 
         jTextField1.setText("jTextField1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Battle");
 
         userHealthBar.setBackground(new java.awt.Color(242, 242, 242));
         userHealthBar.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
@@ -155,7 +179,7 @@ public class Battlefield extends javax.swing.JFrame {
         userHealthBar.setStringPainted(true);
 
         btnArrow.setBackground(javax.swing.UIManager.getDefaults().getColor("Label.background"));
-        btnArrow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-arrow-right-24.png"))); // NOI18N
+        btnArrow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arrow-right.png"))); // NOI18N
         btnArrow.setBorderPainted(false);
         btnArrow.setIconTextGap(0);
         btnArrow.setPreferredSize(new java.awt.Dimension(40, 50));
@@ -210,47 +234,59 @@ public class Battlefield extends javax.swing.JFrame {
             }
         });
 
+        btnExit.setText("Go Back");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnToOptions)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnSkip)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnSubmit)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnArrow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnExit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblTitle)
+                        .addGap(193, 193, 193))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(userHealthBar, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblUserImage))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblCompImage, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(compHealthBar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTitle)
-                .addGap(193, 193, 193))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnToOptions)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnSkip)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnSubmit)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnArrow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(userHealthBar, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblUserImage))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblCompImage, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(compHealthBar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(18, 18, 18))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(lblTitle)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblTitle)
+                    .addComponent(btnExit))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -290,8 +326,7 @@ public class Battlefield extends javax.swing.JFrame {
             } else {
                 txtOutput.setText("Oh no! You have been defeated by Chikorita");
             }
-            txtOutput.append("\n==="
-                    + "\nClick the arrow button to return to the main menu");
+            txtOutput.append("\n===\nClick the arrow button to return to the main menu");
 
             //If second time pressed
             if (isEnd == true){
@@ -315,16 +350,9 @@ public class Battlefield extends javax.swing.JFrame {
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
         int damageDone;
         
-        if (easyMode) {
-            damageDone = damage(7);
-        } else {
-            damageDone = damage(12);
-        }
+        damageDone = damage(15, easyMode);
         //show answer
-        txtOutput.append("\n==="
-                + "\nThe correct answer was: " + answers.get(questionIndex).get(0)
-                + "\n==="
-                + "\nYou missed. The opponent dealt " + damageDone + " damage.");
+        userMisses(damageDone);
         userHealth -= damageDone;
         
         updateHealth();
@@ -366,11 +394,8 @@ public class Battlefield extends javax.swing.JFrame {
 
         //dealing damage
         int damageDone;
-        if (easyMode){
-            damageDone = damage(7);
-        } else {
-            damageDone = damage(12);
-        }   
+        damageDone = damage(15, easyMode);
+        
         if (userGuess.equals(answers.get(questionIndex).get(0))){
 
             txtOutput.append("\n==="
@@ -383,39 +408,31 @@ public class Battlefield extends javax.swing.JFrame {
             txtOutput.append("Pikachu dealt " + damageDone + " damage. ");
                 
             //comp damaging
-            if (easyMode){
-                damageDone = damage(7);
-            } else {
-                damageDone = damage(12); 
-            }
+            damageDone = damage(15, easyMode);
             userHealth -= damageDone;
 
             if (damageDone != 0) {
-                 txtOutput.append("The opponent dealt " + damageDone + " damage.");
+                 txtOutput.append("The Chikorita dealt " + damageDone + " damage.");
             } else {
-                 txtOutput.append("The opponent missed");
+                 txtOutput.append("The Chikorita missed");
             }
             
         } else {
+            damageDone = damage(15, easyMode);
+            userMisses(damageDone);
             userHealth -= damageDone;
-            txtOutput.append("\n==="
-                + "\nThe correct answer was: " + answers.get(questionIndex).get(0)
-                + "\n==="
-                + "\nYou missed.");
-            
-            if (damageDone != 0) {
-                 txtOutput.append("The opponent dealt " + damageDone + " damage.");
-            } else {
-                 txtOutput.append("The opponent also missed");
-            }
         }
 
         //display question results
-        
-        
         updateHealth();
         changeQMode();
     }//GEN-LAST:event_btnSubmitActionPerformed
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        //opens main menu, closes current
+        this.dispose();
+        new MainMenu().setVisible(true);
+    }//GEN-LAST:event_btnExitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -434,14 +451,18 @@ public class Battlefield extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Battlefield.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Battle.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Battlefield.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Battle.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Battlefield.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Battle.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Battlefield.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Battle.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -450,13 +471,14 @@ public class Battlefield extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Battlefield().setVisible(true);
+                new Battle().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnArrow;
+    private javax.swing.JButton btnExit;
     private javax.swing.JButton btnSkip;
     private javax.swing.JButton btnSubmit;
     private javax.swing.JToggleButton btnToOptions;

@@ -25,15 +25,18 @@ public class MainMenu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        lblTitle = new javax.swing.JLabel();
         btnBattle = new javax.swing.JButton();
         btnCustomize = new javax.swing.JButton();
+        lblSlogan = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Main Menu");
 
-        jLabel1.setFont(new java.awt.Font("Papyrus", 1, 24)); // NOI18N
-        jLabel1.setText("Welcome to the Practice Grounds");
+        lblTitle.setFont(new java.awt.Font("Papyrus", 1, 24)); // NOI18N
+        lblTitle.setText("Welcome to the Practice Grounds");
 
+        btnBattle.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
         btnBattle.setText("Battle");
         btnBattle.setToolTipText("");
         btnBattle.addActionListener(new java.awt.event.ActionListener() {
@@ -42,6 +45,7 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
+        btnCustomize.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
         btnCustomize.setText("Customize Questions");
         btnCustomize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -49,44 +53,56 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
+        lblSlogan.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        lblSlogan.setForeground(new java.awt.Color(102, 102, 102));
+        lblSlogan.setText("Where you practice through multiple choice/short answer questions");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(17, 17, 17)
+                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(159, 159, 159)
+                        .addComponent(btnBattle))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(97, 97, 97)
+                        .addComponent(btnCustomize)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnCustomize)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(btnBattle)))
-                .addGap(134, 134, 134))
+                .addComponent(lblSlogan)
+                .addGap(40, 40, 40))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGap(23, 23, 23)
+                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblSlogan)
+                .addGap(24, 24, 24)
                 .addComponent(btnBattle)
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
                 .addComponent(btnCustomize)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBattleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBattleActionPerformed
+        //opens battle, closes current
         this.dispose();
-        new Battlefield().setVisible(true);
+        new Battle().setVisible(true);
     }//GEN-LAST:event_btnBattleActionPerformed
 
     private void btnCustomizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomizeActionPerformed
+        //opens custom questions, closes current
         this.dispose();
         new CustomQuestions().setVisible(true);
     }//GEN-LAST:event_btnCustomizeActionPerformed
@@ -132,6 +148,7 @@ public class MainMenu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBattle;
     private javax.swing.JButton btnCustomize;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel lblSlogan;
+    private javax.swing.JLabel lblTitle;
     // End of variables declaration//GEN-END:variables
 }
