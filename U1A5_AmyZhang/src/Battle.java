@@ -43,9 +43,9 @@ public class Battle extends javax.swing.JFrame {
         try{
             Scanner readFile = new Scanner(new File(this.getClass().getResource("Questions.csv").getFile()));
 
-            int line = 0;
-            while (readFile.hasNextLine()){
-                //new scanner to read each line
+            //continues reading file until no new lines
+            for (int line = 0; readFile.hasNextLine(); line++){
+                //new scanner to read values in each line
                 Scanner readLine = new Scanner(readFile.nextLine());
                 readLine.useDelimiter(",");
                 
@@ -56,7 +56,6 @@ public class Battle extends javax.swing.JFrame {
                     currentAnswers.add(readLine.next());
                 }
                 answers.add(currentAnswers);
-                line++;
             }
             //done reading file
             readFile.close();
@@ -426,7 +425,7 @@ public class Battle extends javax.swing.JFrame {
         if (easyMode){
             userGuess = String.valueOf(comboOptions.getSelectedItem()); //first selected default
         } else { //normal mode
-            userGuess = txtGuess.getText().toLowerCase();
+            userGuess = txtGuess.getText().toLowerCase();//answers are not case sensitive
             //returns if nothing is entered
             if (userGuess.equals("")){
                 lblError.setText("You must enter an answer to submit");
