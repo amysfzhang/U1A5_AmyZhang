@@ -96,9 +96,9 @@ public class CustomQuestions extends javax.swing.JFrame {
 
         lblQuestions.setText("Question:");
 
-        lblAnswers.setText("Answer:");
+        lblAnswers.setText("Answer*:");
 
-        lblOptions.setText("Multiple Choice Options:");
+        lblOptions.setText("Multiple Choice Options*:");
 
         lblTitle.setFont(new java.awt.Font("Papyrus", 1, 24)); // NOI18N
         lblTitle.setText("Create Your Own Questions");
@@ -157,7 +157,7 @@ public class CustomQuestions extends javax.swing.JFrame {
         });
 
         lblError1.setForeground(new java.awt.Color(102, 102, 102));
-        lblError1.setText("(not case sensitive)");
+        lblError1.setText("*not case sensitive");
         lblError1.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -194,7 +194,7 @@ public class CustomQuestions extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(lblError1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                         .addComponent(txtOption2, javax.swing.GroupLayout.PREFERRED_SIZE, 618, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
@@ -302,8 +302,7 @@ public class CustomQuestions extends javax.swing.JFrame {
             Scanner readFile = new Scanner(new File(this.getClass().getResource("Questions.csv").getFile()));
             
             //loops through each line in file. Adds to updatedLines if not selected
-            int lineNum = 0;
-            while (readFile.hasNextLine()){
+            for (int lineNum = 0; readFile.hasNextLine(); lineNum++){
                 boolean shouldRemove = false;
                 String line = readFile.nextLine();
                 
@@ -316,8 +315,8 @@ public class CustomQuestions extends javax.swing.JFrame {
                 }
                 //adds to array if not selected
                 if (!shouldRemove) updatedLines.add(line);
-                lineNum++;
             }
+            
             readFile.close(); //done reading file
             
         } catch (IOException e) {
