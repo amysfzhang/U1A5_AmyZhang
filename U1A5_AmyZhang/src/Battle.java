@@ -7,14 +7,15 @@
  *
  * @author Amy Zhang
  * Date: October 16, 2023
+ * A multiple choice quiz using a Pokemon battle style
  * 
  */
-import java.io.*;
-import java.util.*;
+import java.util.*; //read files using Scanner
+import java.io.*; //catch error
         
 public class Battle extends javax.swing.JFrame {
 
-    boolean easyMode = false, questionMode = false, isEnd = false;;
+    boolean easyMode, questionMode, isEnd = false;
     int userHealth = 100, compHealth = 100, questionIndex = -1;
     String userGuess;
     
@@ -34,7 +35,9 @@ public class Battle extends javax.swing.JFrame {
         btnSubmit.setVisible(false);
         txtGuess.setVisible(false);
         comboOptions.setVisible(false);
-        questionMode = true;
+        //resetting mode values
+        questionMode = false;
+        easyMode = false;
         
         //adding questions data to arrays
         try{
@@ -55,6 +58,7 @@ public class Battle extends javax.swing.JFrame {
                 answers.add(currentAnswers);
                 line++;
             }
+            //done reading file
             readFile.close();
             
         } catch (IOException e) {
@@ -64,28 +68,33 @@ public class Battle extends javax.swing.JFrame {
     }
     
     /**
-     * @param int the max value of the damage plus 2
-     * @param boolean if easyMode is on
-     * @return int randomized damage amount, might be 0
+     * Calculates amount of damage dealt and accounts for easyMode
+     * @param bound max value of the damage
+     * @param easyMode lowers damage bound if true
+     * @return randomized damage amount, can be 0 (a miss)
      */
     public static int damage (int bound, boolean easyMode){
         Random rand = new Random();
         int damage;
-        bound +=2;
+        bound +=2; //extra values for miss or critical hit
         
         //changes range to be smaller if easymode is on
         if (easyMode) bound -= 5;
         damage = rand.nextInt(bound);
         
-        //slight offchance for damage to be a critical hit
+        //slight offchance for damage to be a critical hit (more damage)
         if (damage == bound - 1){
             return bound + 3;
         }
         return damage;
     }
     
-    public void userMisses(int damageDone){
-        //displays message for user missed
+    /**
+     * Displays the message if the user missed their move
+     * @param damageDone is the amount of damage dealt by opponent
+     */
+    public void userMissesMessage(int damageDone){
+        //displays message for if user missed
         txtOutput.append("\n==="
             + "\nThe correct answer was: " + answers.get(questionIndex).get(0)
             + "\n==="
@@ -99,38 +108,55 @@ public class Battle extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Updates progress bars with health values
+     * Post-condition: updated progress bar (health) using compHealth and userHealth values
+     */
     public void updateHealth(){
         compHealthBar.setValue(compHealth);
         userHealthBar.setValue(userHealth);
     }
     
+    /**
+     * Swaps from question mode to results or vice versa depending on current mode
+     * Pre-condition: question mode is true (textfields and buttons related to answering question are visible) or question mode is false (arrow button is visible)
+     * Post-condition: question mode is false (textfields and buttons related to answering question are invisible) or question mode is true (arrow button is invisible)
+     */
     public void changeQMode(){
-        if (questionMode){ //showing textfield and buttons to submit
-            btnArrow.setVisible(false);
+        if (!questionMode){ //showing battle results -> question asking
+            btnArrow.setVisible(false); //invisible       
+            
+            //buttons to submit answers
             btnSubmit.setVisible(true);
-            
             btnSkip.setVisible(true);
-            btnToOptions.setVisible(true);
+            //normal mode submission
             txtGuess.setVisible(true);
-            comboOptions.setVisible(false);
-            
-            questionMode = false;
-            
-        } else { //showing answer, damage dealt
-            btnArrow.setVisible(true);
-            btnSubmit.setVisible(false);
-            
-            btnToOptions.setVisible(false);
-            btnToOptions.setSelected(false);
+            lblError.setText(""); //resetting error message to empty    
+            //easymode is off, reset
+            btnToOptions.setVisible(true);
             btnToOptions.setEnabled(true);
+            comboOptions.setVisible(false);
             easyMode = false;
             
+            //updating mode
+            questionMode = true;
+            updateHealth();
+            
+        } else { //question asking -> showing battle results 
+            btnArrow.setVisible(true); //only visible
+            
+            //setting all buttons and textfields invisible
+            btnSubmit.setVisible(false);
             btnSkip.setVisible(false);
             txtGuess.setVisible(false);
             txtGuess.setText("");
+            btnToOptions.setVisible(false);
+            btnToOptions.setSelected(false);
             comboOptions.setVisible(false);
             
-            questionMode = true;
+            //updating mode            
+            questionMode = false;
+            updateHealth();
         }
     }
 
@@ -164,6 +190,7 @@ public class Battle extends javax.swing.JFrame {
         lblUserImage = new javax.swing.JLabel();
         btnSubmit = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
+        lblError = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jTextPane1);
 
@@ -171,6 +198,7 @@ public class Battle extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Battle");
+        setBackground(new java.awt.Color(255, 255, 255));
 
         userHealthBar.setBackground(new java.awt.Color(242, 242, 242));
         userHealthBar.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
@@ -241,6 +269,10 @@ public class Battle extends javax.swing.JFrame {
             }
         });
 
+        lblError.setForeground(new java.awt.Color(255, 0, 51));
+        lblError.setText(" ");
+        lblError.setToolTipText("");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -250,7 +282,7 @@ public class Battle extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnExit)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                         .addComponent(lblTitle)
                         .addGap(193, 193, 193))
                     .addGroup(layout.createSequentialGroup()
@@ -262,7 +294,9 @@ public class Battle extends javax.swing.JFrame {
                                         .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblError)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnSkip)
                                     .addGroup(layout.createSequentialGroup()
@@ -306,7 +340,9 @@ public class Battle extends javax.swing.JFrame {
                         .addComponent(txtGuess, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnArrow, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(comboOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnSubmit))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSubmit)
+                        .addComponent(lblError)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSkip)
@@ -318,24 +354,10 @@ public class Battle extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnArrowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnArrowActionPerformed
-        Random rand = new Random();
+        Random rand = new Random(); //for generating random question
         
-        if (compHealth <= 0 || userHealth <= 0) {
-            if (compHealth <= 0) {
-                txtOutput.setText("Congrats! You have defeated Chikorita");
-            } else {
-                txtOutput.setText("Oh no! You have been defeated by Chikorita");
-            }
-            txtOutput.append("\n===\nClick the arrow button to return to the main menu");
-
-            //If second time pressed
-            if (isEnd == true){
-                this.dispose();
-                new MainMenu().setVisible(true);
-            }
-            isEnd = true;
-            
-        } else {
+        //continue to next question
+        if (compHealth > 0 && userHealth > 0) {
             int lastQuestionIndex = questionIndex;
             do{
                 questionIndex = rand.nextInt(questions.size());
@@ -344,87 +366,104 @@ public class Battle extends javax.swing.JFrame {
             //display next question
             txtOutput.setText(questions.get(questionIndex));
             changeQMode();
+            
+        //player or opponent is defeated
+        } else {
+            //first time button is pressed (ending message)
+            if (compHealth <= 0) {
+                txtOutput.setText("Congrats! You have defeated Chikorita");
+            } else {
+                txtOutput.setText("Oh no! You have been defeated by Chikorita");
+            }
+            txtOutput.append("\n===\nClick the arrow button to return to the main menu");
+
+            //second time button is pressed (goes back to main menu)
+            if (isEnd == true){
+                this.dispose();
+                new MainMenu().setVisible(true);
+            }
+            isEnd = true;//differentiates first vs second button press 
         }
     }//GEN-LAST:event_btnArrowActionPerformed
 
     private void btnSkipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSkipActionPerformed
-        int damageDone;
-        
-        damageDone = damage(15, easyMode);
-        //show answer
-        userMisses(damageDone);
+        lblError.setText(""); //resetting error message to empty
+
+        //dealing damage, same as getting question wrong
+        int damageDone = damage(15, easyMode);        
+        userMissesMessage(damageDone);//shows answer
         userHealth -= damageDone;
         
-        updateHealth();
+        //changes mode to results page        
         changeQMode();
     }//GEN-LAST:event_btnSkipActionPerformed
 
     private void btnToOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnToOptionsActionPerformed
-        if (btnToOptions.isSelected()){         
-            //switch to easy mode
-            comboOptions.setVisible(true);
-            txtGuess.setVisible(false);
-            btnToOptions.setEnabled(false);
-            easyMode = true;   
-            
-            //change options
-            comboOptions.removeAllItems();
-            //make options randomized
-            ArrayList<String> shuffledOptions = new ArrayList<>();
-            for (String option : answers.get(questionIndex)) {
-                shuffledOptions.add(option);
-            }
-            Collections.shuffle(shuffledOptions);
-            //add options
-            for (String option : shuffledOptions) {
-                comboOptions.addItem(option);
-            }
-            
-        } 
+        lblError.setText(""); //resetting error message to empty
+       
+        //switch to easy mode, visibility change
+        comboOptions.setVisible(true);
+        txtGuess.setVisible(false);
+        btnToOptions.setEnabled(false);
+        easyMode = true;   
+
+        //remove options in comboBos
+        comboOptions.removeAllItems();
+
+        //shuffle options in new arrayList
+        ArrayList<String> shuffledOptions = new ArrayList<>();
+        for (String option : answers.get(questionIndex)) shuffledOptions.add(option);
+        Collections.shuffle(shuffledOptions);
+
+        //add shuffled options to comboBox
+        for (String option : shuffledOptions) comboOptions.addItem(option);
     }//GEN-LAST:event_btnToOptionsActionPerformed
 
     private void btnSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitActionPerformed
-        //check which mode (easy/normal)
+        lblError.setText(""); //resetting error message to empty
+        
+        //get input from user, differing modes
         if (easyMode){
-            userGuess = String.valueOf(comboOptions.getSelectedItem());
-            // try except if nothing is selected
-        } else {
+            userGuess = String.valueOf(comboOptions.getSelectedItem()); //first selected default
+        } else { //normal mode
             userGuess = txtGuess.getText().toLowerCase();
+            //returns if nothing is entered
+            if (userGuess.equals("")){
+                lblError.setText("You must enter an answer to submit");
+                return;
+            }
         }
 
         //dealing damage
-        int damageDone;
-        damageDone = damage(15, easyMode);
+        int damageDone = damage(15, easyMode);
         
-        if (userGuess.equals(answers.get(questionIndex).get(0))){
-
-            txtOutput.append("\n==="
-                + "\nThat was correct!"
-                + "\n===\n");
+        //user answer is correct
+        if (userGuess.equals(answers.get(questionIndex).get(0))){ 
+            txtOutput.append("\n===\nThat was correct!\n===\n");
             
-            if (damageDone == 0) damageDone = 1;
-     
+            //attacking opponent
+            if (damageDone == 0) damageDone = 1; //can not miss
             compHealth -= damageDone;       
             txtOutput.append("Pikachu dealt " + damageDone + " damage. ");
-                
-            //comp damaging
+            
+            //opponent damaging user
             damageDone = damage(15, easyMode);
             userHealth -= damageDone;
-
+            //different message depending of if opponent missd or hit
             if (damageDone != 0) {
                  txtOutput.append("The Chikorita dealt " + damageDone + " damage.");
             } else {
                  txtOutput.append("The Chikorita missed");
             }
             
+        //user answer is incorrect
         } else {
             damageDone = damage(15, easyMode);
-            userMisses(damageDone);
+            userMissesMessage(damageDone);
             userHealth -= damageDone;
         }
 
-        //display question results
-        updateHealth();
+        //changes mode to results page
         changeQMode();
     }//GEN-LAST:event_btnSubmitActionPerformed
 
@@ -493,6 +532,7 @@ public class Battle extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JLabel lblCompImage;
+    private javax.swing.JLabel lblError;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblUserImage;
     private javax.swing.JTextField txtGuess;

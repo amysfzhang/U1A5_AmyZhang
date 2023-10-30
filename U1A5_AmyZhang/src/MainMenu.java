@@ -5,7 +5,9 @@
 
 /**
  *
- * @author 342905163
+ * @author Amy Zhang
+ * Date: October 28, 2023
+ * Starting menu for players to either battle or customize
  */
 public class MainMenu extends javax.swing.JFrame {
 
@@ -96,13 +98,13 @@ public class MainMenu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBattleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBattleActionPerformed
-        //opens battle, closes current
+        //opens battle, closes main menu
         this.dispose();
         new Battle().setVisible(true);
     }//GEN-LAST:event_btnBattleActionPerformed
 
     private void btnCustomizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomizeActionPerformed
-        //opens custom questions, closes current
+        //opens custom questions, closes main menu
         this.dispose();
         new CustomQuestions().setVisible(true);
     }//GEN-LAST:event_btnCustomizeActionPerformed

@@ -5,11 +5,14 @@
 
 /**
  *
- * @author amy
+ * @author Amy Zhang
+ * Date: October 28, 2023
+ * For players to customize the question set they answer from
+ * 
  */
-import java.io.*;
-import java.util.*;
-import javax.swing.table.*;
+import java.util.*; //read files using Scanner
+import java.io.*; // write in files and catch error
+import javax.swing.table.*; //edit tables
 
 public class CustomQuestions extends javax.swing.JFrame {
 
@@ -22,32 +25,41 @@ public class CustomQuestions extends javax.swing.JFrame {
 
     }
     
+    /**
+     * Reads Questions.csv file and updates table using file
+     * Post-condition: table values correctly reflect values in file Questions.csv
+     */
     public void updateTable() {
+        //creating an empty table model to store updated values
         DefaultTableModel tableModel = (DefaultTableModel)questionsTable.getModel();
         tableModel.setRowCount(0);
-        //getting file
+        
+        //open file in read mode
         try {
             Scanner readFile = new Scanner(new File(this.getClass().getResource("Questions.csv").getFile()));
             
-            //reads through file
+            //reads each line in file
             int line = 0;
             while (readFile.hasNextLine()){
-                //new scanner to read each lineNum
+            
+                //new scanner to read value in a line
                 Scanner readLine = new Scanner(readFile.nextLine());
                 readLine.useDelimiter(",");
-                
-                //storing values of a lineNum
+            
+                //storing values of a line in array
                 String[] cells = new String[5];
-                for (int i = 0; i < 5 && readLine.hasNext(); i++){
-                    cells[i] = readLine.next(); 
-                }
+                for (int i = 0; i < 5 && readLine.hasNext(); i++) cells[i] = readLine.next(); 
+                
+                //adds array to new row
                 tableModel.addRow(cells);
                 line++;
             }
+            //finished editing tableModel
             readFile.close();
             questionsTable.setModel(tableModel);
 
-        } catch (IOException e) {
+        } catch (IOException e) { //required to have
+            System.out.println("No Questions.csv file found");            
             e.printStackTrace();
         }
     }
@@ -232,79 +244,86 @@ public class CustomQuestions extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        lblError.setText(""); //resetting error message to empty
         
-        lblError.setText("");
-        
-        //check are not empty
-        if (!txtQuestion.getText().isEmpty() && !txtAnswer.getText().isEmpty()) {
-            if (!txtOption1.getText().isEmpty() && !txtOption2.getText().isEmpty() && !txtOption3.getText().isEmpty()) {
-                try {
-                    FileWriter file = new FileWriter(new File(this.getClass().getResource("Questions.csv").getFile()), /*append*/true);
-
-                    file.append(txtQuestion.getText() + "," + txtAnswer.getText() + "," + txtOption1.getText() + ","+ txtOption2.getText() + ","+ txtOption3.getText() + "\n");
-                    file.close();
-
-                    updateTable();  
-                } catch (IOException e) {  
-                    System.out.println("No Questions.csv file found");
-                    e.printStackTrace();
-                } 
-            } else {
-                lblError.setText("You are missing required information (Must have 3 options)");  
-            }
-        } else {
+        //checks if all fields are not empty
+        if (txtQuestion.getText().isEmpty() || txtAnswer.getText().isEmpty()) {
             lblError.setText("You are missing required information (Must include an answer and question)");
+            return;
         }
+        if (txtOption1.getText().isEmpty() || txtOption2.getText().isEmpty() || txtOption3.getText().isEmpty()) {
+            lblError.setText("You are missing required information (Must have 3 options)");
+            return;
+        }
+
+        //adds new question to file
+        try {
+            FileWriter file = new FileWriter(new File(this.getClass().getResource("Questions.csv").getFile()), /*append*/true);
+            file.append(txtQuestion.getText() + "," + txtAnswer.getText() + "," + txtOption1.getText() + ","+ txtOption2.getText() + ","+ txtOption3.getText() + "\n");
+            //done editing file
+            file.close();
+            updateTable();  
+            
+        } catch (IOException e) {  
+            System.out.println("No Questions.csv file found");
+            e.printStackTrace();
+        } 
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        //checks if no questions are added
         if (questionsTable.getRowCount() == 0) {
             lblError.setText("You must have at least 1 question");
-        } else {
-            this.dispose();
-            new MainMenu().setVisible(true);
+            return;
         }
+        
+        //opens main menu, closes custom questions
+        this.dispose();
+        new MainMenu().setVisible(true);
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
-        DefaultTableModel tableModel = (DefaultTableModel)questionsTable.getModel();
+        lblError.setText(""); //resetting error message to empty
         
-        lblError.setText("");
-        //adding questions data to arrays
-        ArrayList<String> updatedLines = new ArrayList<>(); 
+        ArrayList<String> updatedLines = new ArrayList<>(); //keeps track of not selected lines
+
+        //adding questions from table to updatedLines, aside from selected rows
         try{
             Scanner readFile = new Scanner(new File(this.getClass().getResource("Questions.csv").getFile()));
-
+            
+            //loops through each line in file. Adds to updatedLines if not selected
             int lineNum = 0;
             while (readFile.hasNextLine()){
-                String line = readFile.nextLine();
                 boolean shouldRemove = false;
+                String line = readFile.nextLine();
+                
+                //checks if line number is same as selected rows
                 for (int removeLineNum : questionsTable.getSelectedRows()) {
                     if (removeLineNum == lineNum){
-                        shouldRemove = true;
+                        shouldRemove = true; //if any of selected rows match current, remove
                         break;
                     }
                 }
-                if (!shouldRemove) {
-                    updatedLines.add(line);
-                }
+                //adds to array if not selected
+                if (!shouldRemove) updatedLines.add(line);
                 lineNum++;
             }
-            readFile.close();
+            readFile.close(); //done reading file
+            
         } catch (IOException e) {
             System.out.println("No Questions.csv file found");
             e.printStackTrace();
         }
         
+        //Updates rows in file according to updatedLines
         try {
             FileWriter file = new FileWriter(new File(this.getClass().getResource("Questions.csv").getFile()));
-
-            for (String line : updatedLines) {
-                file.write(line + "\n");
-            }
+            //adds all rows from updatedLines to file
+            for (String line : updatedLines) file.write(line + "\n");
+            //done editing file
             file.close();
-
             updateTable();  
+            
         } catch (IOException e) {  
             System.out.println("No Questions.csv file found");
             e.printStackTrace();
@@ -314,11 +333,12 @@ public class CustomQuestions extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnResetToDefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetToDefaultActionPerformed
+        lblError.setText(""); //resetting error message to empty
         
-        lblError.setText("");
+        //resets contents in file to preset
         try {
-            FileWriter file = new FileWriter(new File(this.getClass().getResource("Questions.csv").getFile()));
-
+            FileWriter file = new FileWriter(new File(this.getClass().getResource("Questions.csv").getFile())); //not appending
+            //writes over all content in file
             file.write("Donner (Futur): nous _____,donnerons,donnerai,donneront,donnerez\n"
                     + "Être (Présent): ils/elles _____,sont,êtes,est,étaient\n"
                     + "Faire (Imparfait): nous _____,faisions,faisais,faisait,faisons\n"
@@ -327,9 +347,10 @@ public class CustomQuestions extends javax.swing.JFrame {
                     + "Aller (Présent): vous ____,allez,allons,alliez,allais\n"
                     + "Dire (Conditionnel présent): tu _____,dirais,diraiz,dirions,diraient\n"
                     + "Savoir (Futur Antérieur): nous _____,aurons su,ai su,aurai su,auras su\n");
+            //done editing file
             file.close();
-
             updateTable();  
+            
         } catch (IOException e) {  
             System.out.println("No Questions.csv file found");
             e.printStackTrace();
